@@ -16,7 +16,7 @@ type FTPFileItem = {
   member this.childFile child =
     { variant = File; name = child; location = this.location + child }
   member this.childSymlink child =
-    { variant = Symlink; name = child; location = this.location + child }
+    { variant = Symlink; name = child; location = this.location + child + "/" }
   member this.childDirectory child =
     { variant = Directory; name = child; location = this.location + child + "/" }
 

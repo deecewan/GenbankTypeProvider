@@ -22,7 +22,9 @@ let provideSimpleValue (name: string, value: string) =
 let parseAnnotationHashes (location: string) =
   let file = Helpers.downloadFileFromFTP(location)
   let split =
-    file.Split([|'\n'|], StringSplitOptions.RemoveEmptyEntries)
+    file
+      .Substring(2) // there is a `# ` at the start of the file that I don't want
+      .Split([|'\n'|], StringSplitOptions.RemoveEmptyEntries)
     |> Array.map(fun line -> line.Split([|'\t'|], StringSplitOptions.RemoveEmptyEntries))
   
   Array.map2(fun (column: string) ->
