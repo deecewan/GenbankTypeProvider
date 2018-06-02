@@ -3,7 +3,9 @@
 open System
 open System.IO
 open System.Net
+open GenbankTypeProvider
 
+let logger = Logger.createChild(Logger.logger)("Helpers")
 
 type FileType = Directory | File | Symlink
 type FTPFileItem = {
@@ -50,7 +52,7 @@ let downloadFileFromFTP (url: string) =
   reader.ReadToEnd()
 
 let loadDirectoryFromFTP (item: FTPFileItem) =
-  Console.WriteLine("Making request to {0}", item.location)
+  logger.Log(sprintf "Making request to %s" item.location)
   // Inspiration from https://github.com/dsyme/FtpTypeProviderExample
   let req = WebRequest.Create(item.location)
   req.Method <- WebRequestMethods.Ftp.ListDirectoryDetails
@@ -69,10 +71,10 @@ let getLatestAssemblyFor (genome: FTPFileItem) =
   let items = latestItem |> loadDirectoryFromFTP
   let length = List.length(items)
   if length = 0 then
-    failwith(String.Format("Couldn't get latest assembly for {0} at {1}", genome, latestItem.location));
+    (sprintf "Couldn't get latest assembly for %A at %s" genome latestItem.location) |> failwith
   if length > 1 then
-    System.Console.WriteLine("Got multiple items in latest assembly. Count: {0}", length)
-    Seq.map(fun (c: FTPFileItem) -> System.Console.WriteLine("{0}", c))(items) |> ignore
+    logger.Warn(sprintf "Got multiple items in latest assembly. Count: %d" length)
+    Seq.map(fun (c: FTPFileItem) -> logger.Log(sprintf "%A" c))(items) |> ignore
   let item = Seq.item(0)(items)
 
   // these are the only files we're actually interested in here
@@ -82,7 +84,7 @@ let getLatestAssemblyFor (genome: FTPFileItem) =
   ]
 
 let getChildDirectories (item: FTPFileItem) =
-  Console.WriteLine("Loading from URL: {0}", item.location)
+  logger.Log(sprintf "Loading from URL: %s" item.location)
   loadDirectoryFromFTP(item)
   |> List.filter(fun f -> match f.variant with
                           | Directory -> true
