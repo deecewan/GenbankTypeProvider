@@ -84,16 +84,9 @@ let getDirectoriesFromURL (url: string) =
 
 let loadGenomesForVariant (variant: string) =
   let url = createURL([variant]) 
-  Console.WriteLine("Loading from {0}", url);
 
-  url
-  |> getDirectoriesFromURL
-  |> List.map(fun c ->
-      Console.WriteLine("Loaded {0}", c);
-      c
-    )
+  url |> getDirectoriesFromURL
 
 let loadGenomeVariants () =
-  // cheeky cop out
   getDirectoriesFromURL(GENOME_BASE_URL)
   // [{ name = "other"; location = "ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/other"; variant = Directory }]
