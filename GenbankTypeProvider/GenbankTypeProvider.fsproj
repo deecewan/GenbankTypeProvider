@@ -24,6 +24,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\devenv.exe</StartProgram>
+    <StartArguments>C:\Users\david\Desktop\Script1.fsx</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -66,7 +69,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <None Include="paket.references" />
     <Content Include="packages.config" />
-    <Compile Include="Helpers.fs" />
+    <Compile Include="GenbankTypeProvider.Helpers.fs" />
     <Compile Include="GenbankTypeProvider.TypeGenerators.fs" />
     <Compile Include="GenbankTypeProvider.Provider.fs" />
     <Compile Include="Test.fs" />
