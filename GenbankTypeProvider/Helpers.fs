@@ -6,11 +6,11 @@ open System.Net
 open System
 open System.Security.Policy
 
-let GENOME_BASE_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/bacteria";
+let GENOME_BASE_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank";
 
-let urlForBacteria name = String.concat("/")([GENOME_BASE_URL; name])
+let createURL items = String.concat("/")(GENOME_BASE_URL :: items)
 
-let latestAssemblyURL name = String.concat("/")([name |> urlForBacteria; "latest_assembly_versions"])
+let latestAssemblyURL variant name = String.concat("/")([createURL([variant; name]); "latest_assembly_versions"])
 
 type FileType = Directory | File | Symlink
 type FTPFileItem = {
@@ -61,13 +61,13 @@ let loadDirectoryFromFTP (url: string) =
   ]
   filenamesFromDirectories(url)(results)
 
-let getLatestAssemblyFor (bacterium: string) =
-  let url = latestAssemblyURL(bacterium)
+let getLatestAssemblyFor (variant: string) (genome: string) =
+  let url = latestAssemblyURL(variant)(genome)
   // in the latest assembly location, there should only ever be one item
   let items = url |> loadDirectoryFromFTP
   let length = List.length(items)
   if length = 0 then
-    failwith("Couldn't get latest assembly for " + bacterium)
+    failwith(String.Format("Couldn't get latest assembly for [{0}] {1}", variant, genome));
   if length > 1 then
     System.Console.WriteLine("Got multiple items in latest assembly. Count: {0}", length)
     Seq.map(fun (c: FTPFileItem) -> System.Console.WriteLine("{0}", c))(items) |> ignore
@@ -75,9 +75,25 @@ let getLatestAssemblyFor (bacterium: string) =
   
   (url + "/" + item.name) |> loadDirectoryFromFTP
 
-let loadBacteriaFromFTP () =
-  loadDirectoryFromFTP(GENOME_BASE_URL)
+let getDirectoriesFromURL (url: string) =
+  loadDirectoryFromFTP(url)
   |> List.filter(fun f -> match f.variant with
                           | Directory -> true
                           | _ -> false
   )
+
+let loadGenomesForVariant (variant: string) =
+  let url = createURL([variant]) 
+  Console.WriteLine("Loading from {0}", url);
+
+  url
+  |> getDirectoriesFromURL
+  |> List.map(fun c ->
+      Console.WriteLine("Loaded {0}", c);
+      c
+    )
+
+let loadGenomeVariants () =
+  // cheeky cop out
+  getDirectoriesFromURL(GENOME_BASE_URL)
+  // [{ name = "other"; location = "ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/other"; variant = Directory }]

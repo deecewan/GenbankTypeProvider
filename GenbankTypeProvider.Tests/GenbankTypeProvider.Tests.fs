@@ -7,5 +7,5 @@ let ``Does something`` () =
   Assert.Equal("David Buchan-Swanson", Genbank.Provider.Meta.Author)
 
 [<Fact>]
-let ``Loads a bacterium from the FTP service`` () =
-  Genbank.Provider.Bacteria.Abditibacterium_utsteinense.FTPUrl
+let ``Something`` () =
+  Assert.Equal("", Genbank.Provider.Meta.Author)
