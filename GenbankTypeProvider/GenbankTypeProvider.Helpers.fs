@@ -63,25 +63,22 @@ let loadDirectoryFromFTP (item: FTPFileItem) =
   ]
   filenamesFromDirectories(item)(results)
 
-let getLatestAssemblyFor (item: FTPFileItem) =
-  let latestItem = item.childDirectory("latest_assembly_versions")
+let getLatestAssemblyFor (genome: FTPFileItem) =
+  let latestItem = genome.childDirectory("latest_assembly_versions")
   // in the latest assembly location, there should only ever be one item
   let items = latestItem |> loadDirectoryFromFTP
   let length = List.length(items)
   if length = 0 then
-    failwith(String.Format("Couldn't get latest assembly for {0} at {1}", item, latestItem.location));
+    failwith(String.Format("Couldn't get latest assembly for {0} at {1}", genome, latestItem.location));
   if length > 1 then
     System.Console.WriteLine("Got multiple items in latest assembly. Count: {0}", length)
     Seq.map(fun (c: FTPFileItem) -> System.Console.WriteLine("{0}", c))(items) |> ignore
   let item = Seq.item(0)(items)
 
-  let createFile name =
-    { name = name; variant = File; location = item.location + "/" + name }
-
   // these are the only files we're actually interested in here
   [
-    createFile("annotation_hashes.txt");
-    createFile(item.name + "_genomic_gbff.gz");
+    item.childFile("annotation_hashes.txt")
+    item.childFile(item.name + "_genomic_gbff.gz")
   ]
 
 let getChildDirectories (item: FTPFileItem) =
