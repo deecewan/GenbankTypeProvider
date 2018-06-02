@@ -6,7 +6,7 @@ open System.Net
 open System
 open System.Security.Policy
 
-let GENOME_BASE_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank";
+let GENOME_BASE_URL = "ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/";
 
 let createURL items = String.concat("/")(GENOME_BASE_URL :: items)
 
@@ -23,7 +23,7 @@ let filenamesFromDirectories (url: string) (items: List<string []>) =
   [for i in items do
     if i.Length > 1 then
       let fileType: FileType =
-        if i.[0].StartsWith("d") then 
+        if i.[0].StartsWith("d") then
           Directory
         elif i.[0].StartsWith("l") then
           Symlink
@@ -49,8 +49,9 @@ let downloadFileFromFTP (url: string) =
   reader.ReadToEnd()
 
 let loadDirectoryFromFTP (url: string) =
+  Console.WriteLine("Making request to {0}", url + "/")
   // Inspiration from https://github.com/dsyme/FtpTypeProviderExample
-  let req = WebRequest.Create(url)
+  let req = WebRequest.Create(url + "/")
   req.Method <- WebRequestMethods.Ftp.ListDirectoryDetails
   use res = req.GetResponse() :?> FtpWebResponse
   use stream = res.GetResponseStream()
@@ -72,10 +73,11 @@ let getLatestAssemblyFor (variant: string) (genome: string) =
     System.Console.WriteLine("Got multiple items in latest assembly. Count: {0}", length)
     Seq.map(fun (c: FTPFileItem) -> System.Console.WriteLine("{0}", c))(items) |> ignore
   let item = Seq.item(0)(items)
-  
+
   (url + "/" + item.name) |> loadDirectoryFromFTP
 
 let getDirectoriesFromURL (url: string) =
+  Console.WriteLine("Loading from URL: {0}", url)
   loadDirectoryFromFTP(url)
   |> List.filter(fun f -> match f.variant with
                           | Directory -> true
@@ -83,7 +85,7 @@ let getDirectoriesFromURL (url: string) =
   )
 
 let loadGenomesForVariant (variant: string) =
-  let url = createURL([variant]) 
+  let url = createURL([variant])
 
   url |> getDirectoriesFromURL
 
