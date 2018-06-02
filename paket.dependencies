@@ -1,0 +1,12 @@
+group Main
+	source https://www.nuget.org/api/v2
+	github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
+	github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
+	github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
+
+	nuget NetBio.Core
+
+group Test
+	source https://www.nuget.org/api/v2
+	nuget Xunit
+	nuget xunit.runner.visualstudio
