@@ -7,6 +7,7 @@ open System
 open GenbankTypeProvider.Helpers
 open System.Reflection
 open System.Globalization
+open System.Collections.Generic
 
 type PropertyType = {
   name: string
@@ -37,17 +38,22 @@ let provideAnnotationHashes (file: Helpers.FTPFileItem) =
   t.AddMembersDelayed(fun _ -> parseAnnotationHashes(file.location))
   t
 
-let findInAssemblyDirectory (a: List<Helpers.FTPFileItem>) (s: string) =
-  a |> List.find(fun c -> c.name.EndsWith(s))
+let createTypeForAssembly (files: IDictionary<Helpers.AssemblyFile, FTPFileItem>) =
+  [
+    files.Item(Helpers.AnnotationHashes)|> provideAnnotationHashes;
+  ]
 
 let createDelayExploreGenome (genome: FTPFileItem) () =
   logger.Log(sprintf "exploring %A" genome)
-  let assembly = Helpers.getLatestAssemblyFor(genome)
-  let find = findInAssemblyDirectory(assembly)
-  let annotationHashesFile = find("annotation_hashes.txt")
-  let providedAnnotationHashes = provideAnnotationHashes(annotationHashesFile)
-
-  [providedAnnotationHashes]
+  let assemblies = Helpers.getLatestAssembliesFor(genome)
+  if List.length assemblies = 1 then
+    createTypeForAssembly(assemblies.[0].files)
+  else
+    assemblies |> List.map(fun a ->
+      let t = ProvidedTypeDefinition(a.name, Some typeof<obj>) 
+      t.AddMembers(createTypeForAssembly(a.files))
+      t
+    )
 
 let createGenomesTypes (variant: FTPFileItem) =
   logger.Log(sprintf "Creating genome types for %A" variant)

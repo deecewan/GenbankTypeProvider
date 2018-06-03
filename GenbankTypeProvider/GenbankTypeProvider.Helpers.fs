@@ -4,6 +4,7 @@ open System
 open System.IO
 open System.Net
 open GenbankTypeProvider
+open System.Collections.Generic
 
 let logger = Logger.createChild(Logger.logger)("Helpers")
 
@@ -20,13 +21,20 @@ type FTPFileItem = {
   member this.childDirectory child =
     { variant = Directory; name = child; location = this.location + child + "/" }
 
+type AssemblyFile = | AnnotationHashes | GenbankData
+
+type AssemblyRecord = {
+  name: string;
+  files: IDictionary<AssemblyFile, FTPFileItem>;
+}
+
 let BaseFile = {
   name = "";
   variant = Directory;
   location = "ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/";
 }
 
-let filenamesFromDirectories (parent: FTPFileItem) (items: List<string []>) =
+let filenamesFromDirectories (parent: FTPFileItem) (items: string [] list) =
   [for i in items do
     if i.Length > 1 then
       let fileType: FileType =
@@ -65,23 +73,28 @@ let loadDirectoryFromFTP (item: FTPFileItem) =
   ]
   filenamesFromDirectories(item)(results)
 
-let getLatestAssemblyFor (genome: FTPFileItem) =
+let getAssemblyDetails (item: FTPFileItem) =
+  // these are the only files we're actually interested in here
+  {
+    name = item.name;
+    files = 
+      dict [
+        AnnotationHashes, item.childFile("annotation_hashes.txt");
+        GenbankData, item.childFile(item.name + "_genomic_gbff.gz");
+      ]
+  }
+
+let getLatestAssembliesFor (genome: FTPFileItem) =
   let latestItem = genome.childDirectory("latest_assembly_versions")
   // in the latest assembly location, there should only ever be one item
   let items = latestItem |> loadDirectoryFromFTP
   let length = List.length(items)
   if length = 0 then
-    (sprintf "Couldn't get latest assembly for %A at %s" genome latestItem.location) |> failwith
-  if length > 1 then
-    logger.Warn(sprintf "Got multiple items in latest assembly. Count: %d" length)
-    Seq.map(fun (c: FTPFileItem) -> logger.Log(sprintf "%A" c))(items) |> ignore
-  let item = Seq.item(0)(items)
+    let message = sprintf "Couldn't get latest assembly for %A at %s" genome latestItem.location
+    logger.Error(message)
+    message |> failwith
 
-  // these are the only files we're actually interested in here
-  [
-    item.childFile("annotation_hashes.txt")
-    item.childFile(item.name + "_genomic_gbff.gz")
-  ]
+  items |> List.map getAssemblyDetails
 
 let getChildDirectories (item: FTPFileItem) =
   logger.Log(sprintf "Loading from URL: %s" item.location)
