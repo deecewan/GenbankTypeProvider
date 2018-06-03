@@ -5,7 +5,7 @@ open System
 open Colorful
 open System.Drawing
 
-type Level = Log | Debug | Warn | Error
+type Level = | Log | Warn | Error
 
 type Message = { logName: string; level: Level; message: string } with
   static member create(logName: string, level: Level, message: string) =
@@ -22,6 +22,8 @@ type Logger = { name: string; mutable targets: Target list } with
     this.write(Log, message)
   member this.Warn (message: string) =
     this.write(Warn, message)
+  member this.Error (message: string) =
+    this.write(Error, message)
   member this.addTarget (target: Target) =
     this.targets <- target :: this.targets
 
@@ -50,10 +52,10 @@ type ConsoleWriter() =
 
 type FileWriter(directory: string, combinedLog: bool) =
   // TODO: Is it better to just keep 1 stream open always and write to it?
+  do()
+    Directory.CreateDirectory(directory) |> ignore
   let getFileName level =
     Path.Combine(directory, level.ToString().ToLower()) + ".log"
-  
-  let _dir = Directory.CreateDirectory(directory)
   // separate these so we don't have to do the if check on every log message
   let writeStandard ({ logName = logName; level = level; message = message; }) =
     File.AppendAllLines(getFileName(level), [|sprintf "[%s] {%s}" logName message|])
