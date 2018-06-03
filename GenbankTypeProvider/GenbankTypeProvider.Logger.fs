@@ -34,21 +34,9 @@ let createChild (logger:Logger) (name:string) : Logger =
   create(logger.name + ":" + name, logger.targets)
 
 type ConsoleWriter() =
-  let styleSheet = StyleSheet(Color.White)
-  let mutable hasColor: Map<string, bool> = Map.empty
-  let mutable counter = 1
-  let colors = Color.Empty.GetType().GetProperties()
   interface Target with
     member this.Write ({ logName = logName; level = level; message = message; }) =
-      match hasColor.TryFind(logName) with
-      | None ->
-        let color = Color.FromName(colors.[counter].Name)
-        counter <- counter + 1
-        hasColor <- hasColor.Add(logName, true)
-        styleSheet.AddStyle("[" + logName + "]", color)
-      | Some(_) -> ignore()
-      let message = sprintf("[%s] {%s}: {%s}")(logName)(level.ToString().ToUpper())(message) 
-      Console.WriteLineStyled(message, styleSheet)
+      printf("[%s] {%s}: {%s}")(logName)(level.ToString().ToUpper())(message)
 
 type FileWriter(directory: string, combinedLog: bool) =
   // TODO: Is it better to just keep 1 stream open always and write to it?
@@ -71,4 +59,6 @@ type FileWriter(directory: string, combinedLog: bool) =
     member this.Write (message) = writer(message)
   new(directory: string) = FileWriter(directory, true)
 
-let logger = create("GenbankTypeProvider", [ConsoleWriter(); FileWriter("D:\\Logs\\GenbankTypeProvider")])
+// let cw = ConsoleWriter();
+// let fw = FileWriter("/Users/david/Logs/GenbankTypeProvider")
+let logger = create("GenbankTypeProvider", [])
