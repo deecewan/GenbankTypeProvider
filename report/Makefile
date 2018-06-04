@@ -1,7 +1,7 @@
 FILES=$(wildcard src/*.md)
 
 all:
-	mkdir tmp
+	mkdir -p tmp
 	pandoc                          \
 		--from         markdown       \
 		--to           latex          \
@@ -16,4 +16,3 @@ all:
 	pdflatex --output-directory tmp tmp/report.tex
 	pdflatex --output-directory tmp tmp/report.tex
 	mv tmp/report.pdf report.pdf
-	rm -r tmp
