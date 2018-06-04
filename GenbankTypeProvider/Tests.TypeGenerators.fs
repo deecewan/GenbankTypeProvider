@@ -1,0 +1,3 @@
+﻿module GenbankTypeProvider.Tests.TypeGenerator
+
+open GenbankTypeProvider.TypeGenerators

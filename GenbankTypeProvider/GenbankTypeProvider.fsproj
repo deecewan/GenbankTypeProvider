@@ -69,13 +69,13 @@
     <Compile Include="AssemblyInfo.fs" />
     <None Include="paket.references" />
     <Content Include="packages.config" />
-    <Compile Include="GenbankTypeProvider.Logger.fs" />
-    <Compile Include="GenbankTypeProvider.Helpers.fs" />
-    <Compile Include="GenbankTypeProvider.TypeGenerators.fs" />
-    <Compile Include="GenbankTypeProvider.Provider.fs" />
-    <Compile Include="GenbankTypeProvider.Logger.Test.fs" />
-    <Compile Include="GenbankTypeProvider.Helpers.Test.fs" />
-    <Compile Include="GenbankTypeProvider.TypeGenerators.Test.fs" />
+    <Compile Include="Logger.fs" />
+    <Compile Include="Helpers.fs" />
+    <Compile Include="TypeGenerators.fs" />
+    <Compile Include="Provider.fs" />
+    <Compile Include="Tests.Logger.fs" />
+    <Compile Include="Tests.Helpers.fs" />
+    <Compile Include="Tests.TypeGenerators.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
