@@ -1,0 +1,107 @@
+\documentclass[a4paper,12pt]{article} % My Personal Preference
+
+\usepackage[table,xcdraw]{xcolor} % Prettier Tables
+\usepackage[utf8]{inputenc} % Makes input utf8 (I think?)
+\usepackage{amsmath} % All maths related things
+\usepackage{amssymb} % Maths symbols
+\usepackage{cancel} % Show cancellations in maths
+\usepackage{graphicx} % Use images in your report
+\usepackage{fancyhdr} % Make very nice looking header and footers for your reportthe field of study that combines biologic data with software for analysis, storage and distribution [
+\usepackage{titlesec} % Change the way the default titles/heading look
+\usepackage{float} % Make your pictures float/set where you want them
+\usepackage{appendix} % Nicer appendices - acts as a section, own environment, etc.
+\usepackage{siunitx} % Use SI Units in a readable manner
+\usepackage{pgfplots} % Add graphs very simply
+\usepackage{caption} % Options for captions
+\usepackage{pdflscape} % Make landscape pages display in a PDF in landscape, instead of sideways portait
+\usepackage{geometry} % ability to change the sizes of a page.  usefull for `fullbleed' pages
+\usepackage{mathrsfs} % Used for Maths-based script letters (like the R for the real number set, or F for Fourier Transform)
+\usepackage{listings} % format your code for pretty display
+\usepackage[american]{babel} % Does something to do with formatting based on culture
+\usepackage{csquotes}
+\usepackage[url=true,backend=biber,style=apa]{biblatex} % better bibliographies
+\DeclareLanguageMapping{american}{american-apa}
+\usepackage{nameref} % Reference names and make them links (I think?)
+\usepackage[backref=true]{hyperref} % Should be last package include.  Adds links that work
+\usepackage[numbered,framed]{matlab-prettifier} % Pretty-print MATLAB code
+\usepackage{setspace}
+
+% `caption' setup
+\captionsetup{justification=centering}
+
+% Required for syntax highlighting
+$highlighting-macros$
+
+$for(bibliography)$
+\addbibresource{$bibliography$}
+$endfor$
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+%Fancy Header Formatting
+% This is pretty much my standard, but I move the parts around based on
+% how long titles are
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{15pt}
+\lhead{Buchan-Swanson, David}
+\rhead{April 19, 2018}
+\lfoot{Simplifying Bioinformatic Dataset Access}
+\rfoot{\thepage}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\begin{document}
+  %--------------PREAMBLE-------------------------
+  % includes the title page, gives roman numerals to all pages before the first page,
+  \include{titlepage}
+  \pagenumbering{roman}
+  % Changes the page style to plain - only display page number - no headers
+  \pagestyle{plain}
+  \doublespacing
+
+  \section*{Executive Summary}
+  \addcontentsline{toc}{section}{Abstract}
+  Bio-informatics is an increasingly important field, and its very nature
+  produces an extraordinarily large amount of data. Management and usage of
+  this data becomes critical in order to achieve anything meaningful with
+  it \parencite{lee_bioinformatics_2012}.
+
+  A type provider is a compiler extension for F\# which allows for types to be
+  programatically generated for large datasets. This makes them easier to manage
+  and interact with.
+
+  The goal of this research is to determine whether a type provider specifically
+  for bioinformatic data is possible, and whether it would be useful to the
+  community.
+
+  Here, the foundation of the research is laid out in the form of a literature
+  review. Also included a proposal for how to complete the project in
+  a manageable and effective way.
+  \newpage
+
+  \singlespacing
+  \tableofcontents
+
+  % then clears the page, and goes back to arabic numerals
+  \newpage
+  \doublespacing
+  \pagestyle{fancy} % sets the page style back to nice headers
+  \pagenumbering{arabic}
+  \setcounter{page}{1}
+
+  % \renewcommand{\thesection}{} % don't show a part number in the ToC
+	\titleformat{\section}[hang]{\Large\bfseries}{}{0ex}{}{} % No Part Specifier in title
+
+  $body$
+
+  \newpage
+  \printbibliography
+  \addcontentsline{toc}{section}{References}
+
+
+\end{document}
+
