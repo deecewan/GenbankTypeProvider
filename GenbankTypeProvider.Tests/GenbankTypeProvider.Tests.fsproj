@@ -87,10 +87,13 @@
   </Choose>
   <Import Project="..\packages\test\Microsoft.NET.Test.Sdk\build\$(__paket__Microsoft_Net_Test_Sdk_props).props" Condition="Exists('..\packages\test\Microsoft.NET.Test.Sdk\build\$(__paket__Microsoft_Net_Test_Sdk_props).props')" Label="Paket" />
   <ItemGroup>
-    <Compile Include="GenbankTypeProvider.Tests.fs" />
+    <Compile Include="Provider.fs" />
     <None Include="Script.fsx" />
     <Content Include="packages.config" />
     <None Include="paket.references" />
+    <Compile Include="Tests.Logger.fs" />
+    <Compile Include="Tests.Helpers.fs" />
+    <Compile Include="Tests.TypeGenerators.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
