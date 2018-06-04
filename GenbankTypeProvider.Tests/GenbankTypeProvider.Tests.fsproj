@@ -91,9 +91,9 @@
     <None Include="Script.fsx" />
     <Content Include="packages.config" />
     <None Include="paket.references" />
-    <Compile Include="Tests.Logger.fs" />
-    <Compile Include="Tests.Helpers.fs" />
-    <Compile Include="Tests.TypeGenerators.fs" />
+    <Compile Include="Helpers.fs" />
+    <Compile Include="Logger.fs" />
+    <Compile Include="TypeGenerators.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
