@@ -2,3 +2,7 @@
 File:ProvidedTypes.fs ProvidedTypes
 File:ProvidedTypesTesting.fs ProvidedTypes
 Colorful.Console
+
+group Test
+	Xunit
+	xunit.runner.visualstudio
