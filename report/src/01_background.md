@@ -1,19 +1,24 @@
 # Introduction
 
+startcyancolor
+
 Bio-informatics is an increasingly important field, and its very nature produces
 an extraordinarily large amount of data. Management and usage of this data
 becomes critical in order to achieve anything meaningful with it
 [@lee_bioinformatics_2012].
 
+endcyancolor
+
 Being able to access this vast dataset in a simple, programmatic way will
-improve the way that researchers are able to discover and present findings.
+improve the workflow of interacting with Genbank. Genbank is the primary focus
+in the initial stages of development, as it is a large and popular dataset in
+the field, and there is some foundational work already completed in the space.
+
 This paper aims to outline the methodology and research of a type provider for
 the F# programming language in order to more efficiently access and manipulate
 data, with the eventual aim of releasing a tool for the community to use.
 
-The primary focus of the research in it's initial stages is GenBank format data
-- it is a huge dataset in the genetic informatic field, and there is some
-  foundational work already completed in the space.
+startcyancolor
 
 ## Literature Review
 
@@ -135,18 +140,23 @@ goes on to explain how the use of type providers to turn this data into a
 first-class citizen of F# to "support the integration of large-scale information
 sources".
 
+endcyancolor
+
 ## Research Problem
 
 ### Research Statement
 
-The objective of the research is to create a compiler extension in the form of
-an F# type provider to enable the quick exploration and use of data. This allows
-the data to become a first-class citizen of the programming language to make it
-easier to access data from GenBank and build out programs using bioinformatics
-data.
+The object of the research is to make it easier to access and explore
+bioinformatic data. The research aims to explore the viability of a tool to
+enable access, and to establish the usefulness of such a tool in the wider
+programming community.
+
+startcyancolor
 
 ### Research Questions
 
 The main question driving all of the research is:
 
 > How can we simplify programmatic access to large bioinformatic datasets?
+
+endcyancolor
