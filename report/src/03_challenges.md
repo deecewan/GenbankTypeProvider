@@ -19,9 +19,10 @@ compile because the output location of the `.dll` is not writeable.
 The current strategy around this depends on the aim. For regular development, a
 Debug strategy has been set up on the project to launch a second instance of
 Visual Studio. This enables the use of breakpoints and also encapsulates the
-'use' of the `.dll` to a single instance of the IDE. When the code needs to be
-re-compiled, the second instance is closed, thus dropping its lock on the
-`.dll`, debugging ends, and the initial instance is free to compile again.
+lock on the `.dll` to a single, ephemeral instance of the IDE. When the code
+needs to be re-compiled, the second instance is closed, thus dropping its lock
+on the `.dll`, debugging ends, and the initial instance is free to compile
+again.
 
 This falls apart when there are unexpected errors in the type provider. Because
 the compiler is not a part of the executing assembly (rather, a part of the
@@ -39,9 +40,9 @@ It is highly likely that the cause of many of the problems with this project is
 inexperience. A lack of understanding of type providers, and only rudimentary
 understanding of F# made knowing where to start difficult. It slowed progress,
 as the same sections of code were re-written time and time again as knowledge of
-idiomatic patterns emerged.
+idiomatic patterns increased.
 
-The plus side to this is that the code that is present is, subjectively, quite
+The advantage to this is that the code that is present is, subjectively, quite
 well structured and easy to follow.
 
 Finally, again a lack of understanding of bioinformatics. This challenge has

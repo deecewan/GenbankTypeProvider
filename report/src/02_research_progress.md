@@ -1,20 +1,20 @@
 # Research Progress
 
-Initially, the plan for this was to base the work on another type provider built
-by a QUT student in the past. The proposal highlighted that the first step was
+Initially, the plan was to base the work on another type provider built
+by a QUT student previously. The proposal highlighted that the first step was
 to complete a review into that provider, and decide on its suitability to use as
-a base. Research down that avenue showed that whilst the project was a great
-source of inspiration, it had focussed on achieving goals in a different manner
-to what was intended.
+a base. Research down that avenue showed that whilst the project would be a
+great source of inspiration, it had focussed on achieving goals in a different
+manner to what was intended for this research.
 
 To that end, a new type provider was created. This facilitated gaining a far
 deeper understanding of how type providers work that will accelerate development
 in the future.
 
 This ensured a stable base and strong knowledge of the infrastructure used to
-build the provider, as well as greater control of the use cases to be enabled,
-and has allowed the design to reflect the long-term goal of expanding past just
-the Genbank data source.
+build the provider, as well as greater control of the use cases to be met, and
+has allowed the design to reflect the long-term goal of expanding past just the
+Genbank data source.
 
 Due to starting from a clean slate, a significant amount of time was spent
 researching type providers and learning more about the way they interact with
@@ -24,42 +24,44 @@ the F# compiler.
 
 The new type provider that has been created is able to dynamically query the
 Genbank database for a very limited subset of information. All the available
-taxa are downloaded and inserted as type, as shown in Figure. \ref{all_taxa}.
+taxa are downloaded and inserted as types, as shown in Figure. \ref{all_taxa}.
 
 ![The type provider shows all the taxa available on
 Genbank\label{all_taxa}](src/images/all_taxa.png)
 
 These are downloaded by making a `WebRequest` to [the Genbank FTP
-server](ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/) requesting all details. The
-directory listing is filtered down to just children directories, and the
-resultant list is mapped over to create types.
+server](ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/) requesting the full
+directory listing. This listing is filtered down to just children directories,
+as these are the names of the taxa available, and the resultant list is mapped
+over to create types.
 
-The name is determined by calling `toTitleCase` on the name, and replacing
-underscores with '\texttt{,\textvisiblespace}' - however, this seems to have
-partially
-broken Intellisense, as these 'split' words don't appear in the list. They still
-type check as expected, but do not receive completion assistance. This could
-likely be fixed by switching the split strategy for something else.
+The name is determined by calling `toTitleCase` on the directory title, and
+replacing underscores with '\texttt{,\textvisiblespace}'. However, this seems to
+have partially broken Intellisense, as these 'split' names do not appear in the
+completions. They still type check as expected, but do not receive completion
+assistance. This could likely be fixed by switching the split strategy for
+something else.
 
-The type has 2 children added. Firstly, the FTP URL the node resolves to. This
+Each type has 2 children added. Firstly, the FTP URL the node resolves to. This
 is attached to every remote reference, to be used both for debugging,
 downloading manually, and, as an implementation detail, to easily be able to
 retrieve children of that file. The second child is entirely a misdirection
 layer.
 
-Type 2 is `Genomes`. The purpose of `Genomes` is to hold the genomes that belong
-to the root. Initially, this was not included, and the genomes were attached
-directly to the taxon type. This resulted in FTP requests for every taxon's
-children as soon at the provided type was used. This resulted in a massive
-slowdown, and crashes due to high memory consumption. The documentation
-indicates that delayed members should not be requested 'until necessary'.
-However, Intellisense and the compiler both deemed it necessary. The `Genomes`
-misdirection results in only the genomes for the selected taxon to be
-downloaded.
+The second type attached is `Genomes`. The purpose of `Genomes` is to hold the
+genomes that belong to the taxon. Initially, this was not included, and the
+genomes were attached directly to the taxon type. This resulted in FTP requests
+for every taxon's children as soon at the provided type was used. This caused a
+massive slowdown, and crashes due to high memory consumption. The documentation
+indicated that delayed members should not be requested 'until necessary'.
+However, Intellisense and the compiler both deemed it necessary to make the
+requests before a taxon was selected. The `Genomes` misdirection results in only
+the genomes for the selected taxon to be downloaded.
 
 Once all the taxa are loaded, a user can step into any taxon and then into the
-Genomes of that taxon. Figure. \ref{taxon_genomes} shows the Intellisense
-completion after stepping into the 'Protozoa' taxon.
+`Genomes` type of that taxon. Figure. \ref{taxon_genomes} shows the Intellisense
+completion after stepping into the 'Protozoa' taxon. Seen are a subset of the
+child genomes of that taxon, attached to `Genomes` as nested types.
 
 ![A taxon and its nested `Genome` types. These are loaded by the compiler only
 when necessary\label{taxon_genomes}](src/images/taxon_genomes.png)
@@ -79,9 +81,9 @@ metadata files) and will need to be filtered out in the future.
 Ideally, progressively injecting types as the requests complete would be ideal.
 However, from research into the way type providers work, and investigation of
 the API, it seems that while the request for types can be made asynchronously,
-all the types must be attached to the parent at one time. This definitely needs
-further investigation, as this will help significantly with the initial load
-problem.
+all the types generated from the asynchronous request must be attached to the
+parent at one time. This definitely needs further investigation, as this will
+help significantly with the initial load problem.
 
 Once the directory is parsed, a `Genome` type is created. This is a simple type
 definition. It cannot be used as a value and exists solely to attach children
@@ -109,22 +111,22 @@ The code-block below shows a snippet of how the annotation hashes file and the
 Genbank data file locations were determined.
 
 ```fsharp
-// `item` is an `FTPFileItem` which represent the name
+// `item' is an `FTPFileItem' which represent the name
 // and location of an FTP file
-AnnotationHashes, item.childFile("annotation_hashes.txt");
-GenbankData, item.childFile(item.name + "_genomic_gbff.gz");
+AnnotationHashes: item.childFile("annotation_hashes.txt");
+GenbankData: item.childFile(item.name + "_genomic_gbff.gz");
 ```
 
 Removing these excess requests resulted in significant speed-up of the provider.
 
-Annotation hashes was chosen as a proof-of-concept file as the file exists for,
-as far as is known, every genome on the server. It is a simple file, with just
-column names and values in a tab-separated value format. File access was always
-going to be a necessity, so this was built around an easy file format instead of
-build out complex parsers for other files early in development.
+The `annotation_hashes.txt` file was chosen to use for a proof-of-concept as the
+file exists for, as far as is known, every genome on the server. It is a simple
+file, with just column names and values in a tab-separated format. File access
+was always going to be a necessity, so this was built around an easy file format
+instead of building out complex parsers for other files early in development.
 
 Once the user has found the genome they are looking for, they are able to drill
-into that, as well. The 'Annotation Hashes' section, as determined from the file
+into that as well. The 'Annotation Hashes' section, as determined from the file
 mentioned above, is shown in Figure. \ref{selected_genome}.
 
 ![A user is able to view the properties that live in the `annotation_hashes.txt`
