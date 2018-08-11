@@ -1,3 +1,5 @@
-﻿group Test
-	Xunit
-	xunit.runner.visualstudio
+System.ValueTuple
+FSharp.Core
+group Test
+Xunit
+xunit.runner.visualstudio

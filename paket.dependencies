@@ -4,8 +4,10 @@ group Main
 	github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
 	github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
 
-	nuget NetBio.Core
+	nuget FSharp.Core
+	nuget NetBio.Core 3.0.0-alpha alpha restriction: >= net461
 	nuget Colorful.Console
+	nuget System.ValueTuple 4.4.0 restriction: >= net461
 
 group Test
 	source https://www.nuget.org/api/v2

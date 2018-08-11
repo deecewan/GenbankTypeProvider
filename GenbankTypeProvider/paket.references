@@ -1,4 +1,7 @@
-﻿File:ProvidedTypes.fsi ProvidedTypes
+Colorful.Console
+NetBio.Core
+System.ValueTuple
+FSharp.Core
+File:ProvidedTypes.fsi ProvidedTypes
 File:ProvidedTypes.fs ProvidedTypes
 File:ProvidedTypesTesting.fs ProvidedTypes
-Colorful.Console
