@@ -5,6 +5,7 @@ open System.IO
 open System.Net
 open GenbankTypeProvider
 open System.Collections.Generic
+open System.IO.Compression
 
 let logger = Logger.createChild(Logger.logger)("Helpers")
 
@@ -58,6 +59,14 @@ let downloadFileFromFTP (url: string) =
   use stream = res.GetResponseStream()
   use reader = new StreamReader(stream)
   reader.ReadToEnd()
+let parseGenbankFile (url: string) =
+  let req = WebRequest.Create(url)
+  req.Method <- WebRequestMethods.Ftp.DownloadFile
+  // TODO: Change these back to `use`, not `let`, after the relevant
+  // TODO: metadata is extracted
+  let res = req.GetResponse() :?> FtpWebResponse
+  let stream = new GZipStream(res.GetResponseStream(), CompressionMode.Decompress)
+  Bio.IO.GenBank.GenBankParser().Parse(stream)
 
 let loadDirectoryFromFTP (item: FTPFileItem) =
   logger.Log(sprintf "Making request to %s" item.location)
@@ -77,7 +86,7 @@ let getAssemblyDetails (item: FTPFileItem) =
   // these are the only files we're actually interested in here
   {
     name = item.name;
-    files = 
+    files =
       dict [
         AnnotationHashes, item.childFile("annotation_hashes.txt");
         GenbankData, item.childFile(item.name + "_genomic_gbff.gz");
