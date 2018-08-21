@@ -9,7 +9,7 @@
 \usepackage{fancyhdr} % Make very nice looking header and footers for your reportthe field of study that combines biologic data with software for analysis, storage and distribution [
 \usepackage{titlesec} % Change the way the default titles/heading look
 \usepackage{float} % Make your pictures float/set where you want them
-\usepackage{appendix} % Nicer appendices - acts as a section, own environment, etc.
+\usepackage[titletoc]{appendix} % Nicer appendices - acts as a section, own environment, etc.
 \usepackage{siunitx} % Use SI Units in a readable manner
 \usepackage{pgfplots} % Add graphs very simply
 \usepackage{caption} % Options for captions
@@ -25,6 +25,26 @@
 \usepackage[backref=true]{hyperref} % Should be last package include.  Adds links that work
 \usepackage[numbered,framed]{matlab-prettifier} % Pretty-print MATLAB code
 \usepackage{setspace}
+
+$if(graphics)$
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=0.9\maxwidth,height=\maxheight,keepaspectratio}
+$endif$
+
+\let\origfigure\figure
+\let\endorigfigure\endfigure
+\renewenvironment{figure}[1][2] {
+    \expandafter\origfigure\expandafter[H]
+} {
+    \endorigfigure
+  }
 
 % `caption' setup
 \captionsetup{justification=centering}
@@ -42,6 +62,8 @@ $endfor$
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
+\newcommand{\dueDate}{June 8, 2018}
+
 %Fancy Header Formatting
 % This is pretty much my standard, but I move the parts around based on
 % how long titles are
@@ -49,10 +71,11 @@ $endfor$
 \fancyhf{}
 \setlength{\headheight}{15pt}
 \lhead{Buchan-Swanson, David}
-\rhead{April 19, 2018}
+\rhead{\dueDate}
 \lfoot{Simplifying Bioinformatic Dataset Access}
 \rfoot{\thepage}
 \renewcommand{\footrulewidth}{0.4pt}
+
 
 \begin{document}
   %--------------PREAMBLE-------------------------
@@ -65,22 +88,29 @@ $endfor$
 
   \section*{Executive Summary}
   \addcontentsline{toc}{section}{Abstract}
-  Bio-informatics is an increasingly important field, and its very nature
+  {\color{cyan}
+    Bio-informatics is an increasingly important field, and its very nature
   produces an extraordinarily large amount of data. Management and usage of
-  this data becomes critical in order to achieve anything meaningful with
-  it \parencite{lee_bioinformatics_2012}.
+  this data becomes critical in order to achieve anything meaningful
+  \parencite{lee_bioinformatics_2012}.
 
   A type provider is a compiler extension for F\# which allows for types to be
   programatically generated for large datasets. This makes them easier to manage
   and interact with.
+  }
 
-  The goal of this research is to determine whether a type provider specifically
-  for bioinformatic data is possible, and whether it would be useful to the
-  community.
+  The goal for this research is to simplify access to bioinformatic data,
+  starting with Genbank.  To achieve this, the aims are to explore the
+  viability of a tool to simplify the processing of data, and to establish its
+  usefulness in the community.
 
-  Here, the foundation of the research is laid out in the form of a literature
-  review. Also included a proposal for how to complete the project in
-  a manageable and effective way.
+  To date, an initial implementation of an F\# type provider has been built,
+  with functionality to view taxa and genomes available available on Genbank.
+  There is continuing work on addtional functionality to reach usability by the
+  wider community.
+
+  Included is current progress made towards completion of the type provider,
+  challenges faced in the project and an outline of future work.
   \newpage
 
   \singlespacing
@@ -102,6 +132,24 @@ $endfor$
   \printbibliography
   \addcontentsline{toc}{section}{References}
 
+  \newpage
+
+  \titleformat{\section}[hang]{\Large\bfseries}{}{0ex}{{\normalfont Appendix \thesection}\hspace{.5ex}\textbar\hspace{.5ex}}{}
+  \pagestyle{empty}
+  \begin{appendices}
+    \begin{landscape}
+      \section{Gantt Chart}
+      \label{gantt-chart}
+      \begin{figure}
+        \centering
+        \makebox[\textwidth][c]{
+        \includegraphics[width=1.5\textwidth]{src/images/ganttChart.pdf}}%
+        \caption{Tasks in green are upcoming and are not due to have started
+          yet, blue are in progress and within time expectations, and an orange
+          contingency signifies between 5 and 10 days available.}
+      \end{figure}
+    \end{landscape}
+  \end{appendices}
 
 \end{document}
 
