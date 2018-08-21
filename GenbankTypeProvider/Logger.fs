@@ -4,7 +4,6 @@ open System.IO
 open System
 open Colorful
 open System.Drawing
-open Colorful
 
 type Level = | Log | Warn | Error
 

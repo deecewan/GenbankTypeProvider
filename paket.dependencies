@@ -1,13 +1,13 @@
-group Main
-	source https://www.nuget.org/api/v2
-	github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
-	github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
-	github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
+framework: auto-detect
+source https://www.nuget.org/api/v2
+github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
+github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
+github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
 
-	nuget FSharp.Core
-	nuget NetBio.Core 3.0.0-alpha alpha restriction: >= net461
-	nuget Colorful.Console
-	nuget System.ValueTuple 4.4.0 restriction: >= net461
+nuget FSharp.Core
+nuget NetBio.Core 3.0.0-alpha alpha
+nuget Colorful.Console
+nuget System.ValueTuple 4.4.0
 
 group Test
 	source https://www.nuget.org/api/v2

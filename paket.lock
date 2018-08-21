@@ -1,4 +1,4 @@
-RESTRICTION: == net461
+RESTRICTION: == net472
 NUGET
   remote: https://www.nuget.org/api/v2
     Colorful.Console (1.2.9)

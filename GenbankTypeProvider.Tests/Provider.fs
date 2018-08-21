@@ -3,7 +3,7 @@
   * These will routinely break every three months, as a new Genbank release is
   * made.
   *)
-module GenbankTypeProvider.Tests
+module GenbankTypeProvider.Tests.Provider
 
 open Xunit
 
