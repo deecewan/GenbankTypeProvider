@@ -51,10 +51,11 @@ type FileWriter(directory: string, combinedLog: bool) =
   let getFileName level =
     Path.Combine(directory, level.ToString().ToLower()) + ".log"
   // separate these so we don't have to do the if check on every log message
+  // It'd be awesome if F# supports short-hand destructuring like JS
   let writeStandard ({ logName = logName; level = level; message = message; }) =
     File.AppendAllLines(getFileName(level), [|sprintf "[%s] {%s}" logName message|])
   let writeCombined message =
-    writeStandard message
+    writeStandard message // write to the standard log, too
     File.AppendAllLines(
       getFileName("combined"),
       [|sprintf("%A -- [%s] %s: %s")(DateTime.Now)(message.logName)(message.level.ToString().ToUpper())(message.message)|]
@@ -66,5 +67,6 @@ type FileWriter(directory: string, combinedLog: bool) =
   new(directory: string) = FileWriter(directory, true)
 
 let cw = ConsoleWriter();
+
 // let fw = FileWriter("/Users/david/Logs/GenbankTypeProvider")
 let logger = create("GenbankTypeProvider", [cw])

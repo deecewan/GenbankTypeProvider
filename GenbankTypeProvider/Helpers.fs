@@ -62,8 +62,7 @@ let downloadFileFromFTP (url: string) =
 let parseGenbankFile (url: string) =
   let req = WebRequest.Create(url)
   req.Method <- WebRequestMethods.Ftp.DownloadFile
-  // TODO: Change these back to `use`, not `let`, after the relevant
-  // TODO: metadata is extracted
+  // TODO: Change these back to `use`, not `let`, after the relevant metadata is extracted
   let res = req.GetResponse() :?> FtpWebResponse
   let stream = new GZipStream(res.GetResponseStream(), CompressionMode.Decompress)
   Bio.IO.GenBank.GenBankParser().Parse(stream)
