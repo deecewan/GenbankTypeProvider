@@ -53,12 +53,8 @@ let filenamesFromDirectories (parent: FTPFileItem) (items: string [] list) =
   ]
 
 let downloadFileFromFTP (url: string) =
-  let req = WebRequest.Create(url)
-  req.Method <- WebRequestMethods.Ftp.DownloadFile
-  use res = req.GetResponse() :?> FtpWebResponse
-  use stream = res.GetResponseStream()
-  use reader = new StreamReader(stream)
-  reader.ReadToEnd()
+  Cache.cache.LoadFile(url)
+
 let parseGenbankFile (url: string) =
   let req = WebRequest.Create(url)
   req.Method <- WebRequestMethods.Ftp.DownloadFile
@@ -68,18 +64,11 @@ let parseGenbankFile (url: string) =
   Bio.IO.GenBank.GenBankParser().Parse(stream)
 
 let loadDirectoryFromFTP (item: FTPFileItem) =
-  logger.Log(sprintf "Making request to %s" item.location)
-  // Inspiration from https://github.com/dsyme/FtpTypeProviderExample
-  let req = WebRequest.Create(item.location)
-  req.Method <- WebRequestMethods.Ftp.ListDirectoryDetails
-  use res = req.GetResponse() :?> FtpWebResponse
-  use stream = res.GetResponseStream()
-  use reader = new StreamReader(stream)
-  let results = [
-    while not reader.EndOfStream do
-      yield reader.ReadLine().Split([| ' '; '\t' |], StringSplitOptions.RemoveEmptyEntries)
-  ]
-  filenamesFromDirectories(item)(results)
+  let res = Cache.cache.LoadDirectory(item.location)
+  res.Split('\n')
+  |> Seq.toList
+  |> List.map(fun s -> s.Split([| ' '; '\t' |], StringSplitOptions.RemoveEmptyEntries))
+  |> filenamesFromDirectories(item)
 
 let getAssemblyDetails (item: FTPFileItem) =
   // these are the only files we're actually interested in here
@@ -99,13 +88,13 @@ let getLatestAssembliesFor (genome: FTPFileItem) =
   let length = List.length(items)
   if length = 0 then
     let message = sprintf "Couldn't get latest assembly for %A at %s" genome latestItem.location
-    logger.Error(message)
+    logger.Error("%s") message
     message |> failwith
 
   items |> List.map getAssemblyDetails
 
 let getChildDirectories (item: FTPFileItem) =
-  logger.Log(sprintf "Loading from URL: %s" item.location)
+  logger.Log("Loading from URL: %s") item.location
   loadDirectoryFromFTP(item)
   |> List.filter(fun f -> match f.variant with
                           | Directory -> true
