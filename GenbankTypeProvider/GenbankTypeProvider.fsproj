@@ -26,7 +26,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\$(Configuration)\$(AssemblyName).XML</DocumentationFile>
     <StartAction>Program</StartAction>
-    <StartProgram>C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\devenv.exe</StartProgram>
+    <StartProgram>C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe</StartProgram>
     <StartArguments>C:\Users\david\Desktop\Script1.fsx</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
