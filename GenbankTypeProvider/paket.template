@@ -1,0 +1,10 @@
+type project
+title GenbankTypeProvider
+licenseUrl https://deecewan.mit-license.org/
+copyright 2018 David Buchan-Swanson
+authors David Buchan-Swanson
+
+DESCRIPTION
+	A type provider that generates types for Genbank-stored genome sequences
+	dynamically, providing useful metadata and enabling the exploration of large
+	datasets through the use of Intellisense.
