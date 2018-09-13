@@ -1,5 +1,0 @@
-System.ValueTuple
-FSharp.Core
-group Test
-Xunit
-xunit.runner.visualstudio

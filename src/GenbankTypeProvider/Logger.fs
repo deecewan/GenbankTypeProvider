@@ -2,8 +2,6 @@
 
 open System.IO
 open System
-open Colorful
-open System.Drawing
 
 type Level = | Log | Warn | Error
 
@@ -33,17 +31,6 @@ let create (name: string, targets: Target list) : Logger =
 let createChild (logger:Logger) (name:string) : Logger =
   create(logger.name + ":" + name, logger.targets)
 
-type ConsoleWriter() =
-  interface Target with
-    member this.Write ({ logName = logName; level = level; message = message; }) =
-      let color = match level with
-                  | Log -> Color.Cyan
-                  | Warn -> Color.Orange
-                  | Error -> Color.Red
-
-      let formatted = sprintf("[%s] {%s}: %s")(logName)(level.ToString().ToUpper())(message)
-      Console.WriteLine(formatted, color)
-
 type FileWriter(directory: string, combinedLog: bool) =
   // TODO: Is it better to just keep 1 stream open always and write to it?
   do()
@@ -65,6 +52,5 @@ type FileWriter(directory: string, combinedLog: bool) =
     member this.Write (message) = writer(message)
   new(directory: string) = FileWriter(directory, true)
 
-let cw = ConsoleWriter();
-// let fw = FileWriter("/Users/david/Logs/GenbankTypeProvider")
-let logger = create("GenbankTypeProvider", [cw])
+let fw = FileWriter("/Users/david/Logs/GenbankTypeProvider")
+let logger = create("GenbankTypeProvider", [fw])
