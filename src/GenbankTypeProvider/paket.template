@@ -1,0 +1,29 @@
+type file
+id GenbankTypeProvider
+title
+    GenbankTypeProvider
+owners
+    David Buchan-Swanson
+authors 
+    David Buchan-Swanson
+projectUrl
+    https://github.com/deecewan/GenbankTypeProvider/deecewan/GenbankTypeProvider
+iconUrl
+    https://raw.githubusercontent.com/deecewan/GenbankTypeProvider/master/docs/files/img/logo.png
+licenseUrl
+    https://github.com/deecewan/GenbankTypeProvider/deecewan/GenbankTypeProvider/blob/master/LICENSE.txt
+requireLicenseAcceptance
+    false
+language
+    F#
+copyright
+    Copyright 2017
+tags
+    fsharp
+summary
+    Type provider for Genbank
+description
+    A type provider that generates types for Genbank-stored genome sequences dynamically, providing useful metadata and enabling the exploration of large datasets through the use of Intellisense.
+
+files
+	../../bin/GenbankTypeProvider ==> lib

@@ -2,8 +2,6 @@
 
 open System.IO
 open System
-open Colorful
-open System.Drawing
 
 type Level = | Log | Warn | Error
 
@@ -11,7 +9,7 @@ type Message = { logName: string; level: Level; message: string } with
   static member create(logName: string, level: Level, message: string) =
     { logName = logName; level = level; message = message }
 
-type Target = 
+type Target =
   abstract member Write: string -> Level -> string -> unit
 
 type Logger = { name: string; mutable targets: Target list } with
@@ -33,46 +31,6 @@ let create (name: string, targets: Target list) : Logger =
 let createChild (logger:Logger) (name:string) : Logger =
   create(logger.name + ":" + name, logger.targets)
 
-let colorOptions = [
-  Color.Chartreuse;
-  Color.Fuchsia;
-  Color.DodgerBlue;
-  Color.ForestGreen;
-  Color.MediumSlateBlue;
-  Color.MediumVioletRed;
-  Color.SpringGreen;
-  Color.Yellow;
-  Color.HotPink;
-  Color.DarkViolet;
-]
-
-let mutable usedIndex: int = 0;
-let mutable colormap: Map<string, Color> = Map.empty;
-
-let genColorForLog str =
-  let color = colorOptions.[usedIndex]
-  usedIndex <- (usedIndex + 1) % colorOptions.Length
-  colormap <- colormap.Add(str, color)
-  color
-
-type ConsoleWriter() =
-  interface Target with
-    member this.Write logName level message =
-      let logColor = match colormap.TryFind(logName) with
-                     | Some(color) -> color
-                     | None -> genColorForLog(logName)
-      let color = match level with
-                  | Log -> Color.Cyan
-                  | Warn -> Color.Orange
-                  | Error -> Color.Red
-      
-      let formatter = [|
-        new Formatter(sprintf("[%s]")(logName), logColor);
-        new Formatter(sprintf("{%s}: %s")(level.ToString().ToUpper())(message), color);
-      |]
-
-      Console.WriteLineFormatted("{0} {1}", Color.Gray, formatter);
-
 type FileWriter(directory: string, combinedLog: bool) =
   // TODO: Is it better to just keep 1 stream open always and write to it?
   do()
@@ -89,13 +47,11 @@ type FileWriter(directory: string, combinedLog: bool) =
       getFileName("combined"),
       [|sprintf("%A -- [%s] %s: %s")(DateTime.Now)(level.ToString().ToUpper())(logName)(message)|]
     )
-  
+
   let writer = if combinedLog then writeCombined else writeStandard
   interface Target with
     member this.Write a b c = writer(a)(b)(c)
   new(directory: string) = FileWriter(directory, true)
 
-let cw = ConsoleWriter();
-let fw = FileWriter("C:/Users/david/Logs/GenbankTypeProvider")
-
-let logger = create("GenbankTypeProvider", [cw; fw])
+let fw = FileWriter("/Users/david/Logs/GenbankTypeProvider")
+let logger = create("GenbankTypeProvider", [fw])
