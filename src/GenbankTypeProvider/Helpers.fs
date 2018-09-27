@@ -1,13 +1,10 @@
 ﻿module GenbankTypeProvider.Helpers
 
 open System
-open System.IO
 open System.Net
 open GenbankTypeProvider
 open System.Collections.Generic
 open System.IO.Compression
-open System.CodeDom.Compiler
-open System.CodeDom
 
 let logger = Logger.createChild(Logger.logger)("Helpers")
 
@@ -64,16 +61,6 @@ let parseGenbankFile (url: string) =
   let res = req.GetResponse() :?> FtpWebResponse
   let stream = new GZipStream(res.GetResponseStream(), CompressionMode.Decompress)
   Bio.IO.GenBank.GenBankParser().Parse(stream)
-
-(**
-  * Converts a string to its literal representation, including and whitespace characters
-  * that might exist, to debug what is actually contained in a printed string
-  *)
-let toLiteral str =
-  use writer = new StringWriter()
-  use provider = CodeDomProvider.CreateProvider("CSharp")
-  provider.GenerateCodeFromExpression(CodePrimitiveExpression(str), writer, null)
-  writer.ToString()
 
 let loadDirectoryFromFTP (item: FTPFileItem) =
   let res = Cache.cache.LoadDirectory(item.location)
