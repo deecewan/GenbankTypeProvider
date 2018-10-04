@@ -30,6 +30,7 @@
     <None Include="paket.references" />
     <None Include="paket.template" />
     <Compile Include="Logger.fs" />
+    <Compile Include="Cache.fs" />
     <Compile Include="Helpers.fs" />
     <Compile Include="Parser.fs" />
     <Compile Include="TypeGenerators.fs" />

@@ -44,7 +44,7 @@ let createTypeForAssembly (files: IDictionary<Helpers.AssemblyFile, FTPFileItem>
   ]
 
 let createDelayExploreGenome (genome: FTPFileItem) () =
-  logger.Log(sprintf "exploring %A" genome)
+  logger.Log("exploring %A") genome
   let assemblies = Helpers.getLatestAssembliesFor(genome)
   if List.length assemblies = 1 then
     createTypeForAssembly(assemblies.[0].files)
@@ -56,11 +56,11 @@ let createDelayExploreGenome (genome: FTPFileItem) () =
     )
 
 let createGenomesTypes (variant: FTPFileItem) =
-  logger.Log(sprintf "Creating genome types for %A" variant)
+  logger.Log("Creating genome types for %A") variant
   // load the files for this variant
   Helpers.loadGenomesForVariant(variant)
   |> List.map(fun genome ->
-    logger.Log(sprintf "Loaded for genome %A" genome)
+    logger.Log("Loaded for genome %A") genome
     let genomeType = ProvidedTypeDefinition(genome.name, Some typeof<obj>)
     genomeType.AddMember(ftpUrlType(genome.location))
     genomeType.AddMembersDelayed(createDelayExploreGenome(genome));
@@ -71,12 +71,12 @@ let createGenomesTypes (variant: FTPFileItem) =
 let textInfo = CultureInfo("en-US").TextInfo
 
 let createGenomeVariantType (asm : Assembly, ns: string) (root: FTPFileItem) =
-  logger.Log(sprintf "Creating variant %A" root)
+  logger.Log("Creating variant %A") root
   let name = textInfo.ToTitleCase(root.name.Replace("_", ", "));
   let t = ProvidedTypeDefinition(asm, ns, name, Some typeof<obj>)
   let sub = ProvidedTypeDefinition("Genomes", Some typeof<obj>)
   sub.AddMembersDelayed(fun _ -> createGenomesTypes(root))
   t.AddMember(sub)
   t.AddMember(ftpUrlType(root.location))
-  logger.Log(sprintf "Finished with variant %A" root)
+  logger.Log("Finished with variant %A") root
   t
