@@ -6,26 +6,26 @@ open System
 type Level = | Log | Warn | Error
 
 type Message = { logName: string; level: Level; message: string } with
-  static member create(logName: string, level: Level, message: string) =
+  static member Create(logName: string, level: Level, message: string) =
     { logName = logName; level = level; message = message }
 
-type Target =
+type ITarget =
   abstract member Write: string -> Level -> string -> unit
 
-type Logger = { name: string; mutable targets: Target list } with
-  member private this.write (level: Level, message) =
-    let m = Message.create(this.name, level, message)
+type Logger = { name: string; mutable targets: ITarget list } with
+  member private this.Write (level: Level, message) =
+    let m = Message.Create(this.name, level, message)
     this.targets |> List.map(fun t -> t.Write(this.name)(level)(message)) |> ignore
   member this.Log message =
-    Printf.ksprintf(fun res -> this.write(Log, res)) message
+    Printf.ksprintf(fun res -> this.Write(Log, res)) message
   member this.Warn message =
-    Printf.ksprintf(fun res -> this.write(Warn, res)) message
+    Printf.ksprintf(fun res -> this.Write(Warn, res)) message
   member this.Error message =
-    Printf.ksprintf(fun res -> this.write(Error, res)) message
-  member this.addTarget (target: Target) =
+    Printf.ksprintf(fun res -> this.Write(Error, res)) message
+  member this.AddTarget (target: ITarget) =
     this.targets <- target :: this.targets
 
-let create (name: string, targets: Target list) : Logger =
+let create (name: string, targets: ITarget list) : Logger =
   { name = name; targets = targets }
 
 let createChild (logger:Logger) (name:string) : Logger =
@@ -49,7 +49,7 @@ type FileWriter(directory: string, combinedLog: bool) =
     )
 
   let writer = if combinedLog then writeCombined else writeStandard
-  interface Target with
+  interface ITarget with
     member this.Write a b c = writer(a)(b)(c)
   new(directory: string) = FileWriter(directory, true)
 
