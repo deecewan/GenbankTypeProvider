@@ -4,7 +4,7 @@ open System
 open System.Net
 open GenbankTypeProvider
 open System.Collections.Generic
-open System.IO.Compression
+open System.IO
 
 let logger = Logger.createChild(Logger.logger)("Helpers")
 
@@ -55,7 +55,8 @@ let downloadFileFromFTP (url: string) =
   Cache.cache.LoadFile(url)
 
 let loadDirectoryFromFTP (item: FTPFileItem) =
-  let res = Cache.cache.LoadDirectory(item.location)
+  let stream = Cache.cache.LoadDirectory(item.location)
+  let res = (new StreamReader(stream)).ReadToEnd()
   res.Split([| '\r'; '\n' |], StringSplitOptions.RemoveEmptyEntries)
   |> Seq.toList
   |> List.map(fun s -> s.Split([| ' '; '\t'; '\n' |], StringSplitOptions.RemoveEmptyEntries))

@@ -25,56 +25,46 @@ let ftpUrlType (location: string) =
 let provideSimpleValue (name: string, value: string) =
   ProvidedProperty(name, typeof<string>, isStatic = true, getterCode = fun _ -> Expr.Value(value))
 
-let parseAnnotationHashes (location: string) =
-  let file = Helpers.downloadFileFromFTP(location)
-  let split =
-    file
-      .Substring(2) // there is a `# ` at the start of the file that I don't want
-      .Split([|'\n'|], StringSplitOptions.RemoveEmptyEntries)
-    |> Array.map(fun line -> line.Split([|'\t'|], StringSplitOptions.RemoveEmptyEntries))
-  
-  Array.map2(fun (column: string) ->
-    fun (value:string) ->
-      provideSimpleValue(column, value))(split.[0])(split.[1])
-    |> Array.toList
-
-let provideAnnotationHashes (file: Helpers.FTPFileItem) =
-  let t = ProvidedTypeDefinition("Annotation Hashes", Some typeof<obj>)
-  t.AddMembersDelayed(fun _ -> parseAnnotationHashes(file.location))
-  t
-
-let parseGenbankFile (location: string) =
+let loadGenbankFile (location: string) callback =
   logger.Log("Location of Genbank File: %s") location
-  let file = Helpers.downloadFileFromFTP(location)
-  let stream =
-    file
-      |> Encoding.UTF8.GetBytes
-      |> fun c -> new MemoryStream(c)
-      |> fun c ->new Compression.GZipStream(c, Compression.CompressionMode.Decompress)
-  logger.Log("Got stream: %A") stream
-  Bio.IO.GenBank.GenBankParser().Parse(stream) |> Seq.cast<Bio.ISequence>
-    |> Seq.map(fun item ->
+  use file = Helpers.downloadFileFromFTP(location)
+  use stream = file |> fun c -> new Compression.GZipStream(c, Compression.CompressionMode.Decompress)
+  let s = Bio.IO.GenBank.GenBankParser().Parse(stream) |> Seq.cast<Bio.ISequence>
+  callback s
+
+let createTypeForAssembly (file: Helpers.FTPFileItem) =
+  logger.Log("Creating types for assembly: %A") file
+  loadGenbankFile(file.location)(fun genbankFile ->
+    genbankFile |> Seq.map(fun item ->
       logger.Log("Parsed Genbank Data: %A") item
-      let gb = item.Metadata.Item("Genbank") :?> GenBankMetadata
-
-      logger.Log("Locus Name: %A") gb.Locus.Name
-
+      let gb = item.Metadata.Item("GenBank") :?> GenBankMetadata
       provideSimpleValue("LocusName", gb.Locus.Name)
-    )
-    |> Seq.toList
+    ) |> Seq.toList
+  )
 
-let provideGenbankData (file: Helpers.FTPFileItem) =
-  logger.Log("Printing Genbank File: %A") file
-  parseGenbankFile(file.location)
-
-let createTypeForAssembly (files: IDictionary<Helpers.AssemblyFile, FTPFileItem>) =
-  files.Item(Helpers.GenbankData) |> provideGenbankData;
+let createDocumentationForAssembly (file: Helpers.FTPFileItem) =
+  logger.Log("Creating types for assembly: %A") file
+  loadGenbankFile(file.location)(fun genbankFile ->
+    genbankFile |> Seq.map(fun item ->
+      logger.Log("Parsed Genbank Data: %A") item
+      let gb = item.Metadata.Item("GenBank") :?> GenBankMetadata
+      String.concat("\n")([
+        "<summary>";
+         "This is a provided type for " + file.location + "!";
+          "The locus name is " + gb.Locus.Name + ".";
+         "The definition is " + gb.Definition + ".";
+        "</summary>";
+      ])
+    ) |> String.concat("\n")
+  )
 
 let createGenomeExplorer (genome: FTPFileItem) =
   logger.Log("exploring %A") genome
   Helpers.getLatestAssembliesFor(genome) |> List.map(fun a ->
-    let t = ProvidedTypeDefinition(a.name, Some typeof<obj>) 
-    t.AddMembersDelayed(fun _ -> createTypeForAssembly(a.files))
+    let t = ProvidedTypeDefinition(a.name, Some typeof<obj>)
+    let genbankFile = a.files.Item(Helpers.GenbankData)
+    t.AddXmlDocDelayed(fun _ -> createDocumentationForAssembly(genbankFile))
+    t.AddMembersDelayed(fun _ -> createTypeForAssembly(genbankFile))
     t
   )
 
