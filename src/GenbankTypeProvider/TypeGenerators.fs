@@ -8,11 +8,16 @@ open GenbankTypeProvider.Helpers
 open System.Reflection
 open System.Globalization
 open System.Collections.Generic
+open System.Text
+open System.IO
+open Bio.IO.GenBank
 
 type PropertyType = {
   name: string
   value: string
 }
+
+let logger = Logger.createChild(Logger.logger) "TypeGenerators"
 
 let ftpUrlType (location: string) =
   ProvidedProperty("FTPUrl", typeof<string>, isStatic = true, getterCode = (fun _ -> Expr.Value(location)));
@@ -38,22 +43,40 @@ let provideAnnotationHashes (file: Helpers.FTPFileItem) =
   t.AddMembersDelayed(fun _ -> parseAnnotationHashes(file.location))
   t
 
-let createTypeForAssembly (files: IDictionary<Helpers.AssemblyFile, FTPFileItem>) =
-  [
-    files.Item(Helpers.AnnotationHashes)|> provideAnnotationHashes;
-  ]
+let parseGenbankFile (location: string) =
+  logger.Log("Location of Genbank File: %s") location
+  let file = Helpers.downloadFileFromFTP(location)
+  let stream =
+    file
+      |> Encoding.UTF8.GetBytes
+      |> fun c -> new MemoryStream(c)
+      |> fun c ->new Compression.GZipStream(c, Compression.CompressionMode.Decompress)
+  logger.Log("Got stream: %A") stream
+  Bio.IO.GenBank.GenBankParser().Parse(stream) |> Seq.cast<Bio.ISequence>
+    |> Seq.map(fun item ->
+      logger.Log("Parsed Genbank Data: %A") item
+      let gb = item.Metadata.Item("Genbank") :?> GenBankMetadata
 
-let createDelayExploreGenome (genome: FTPFileItem) () =
-  logger.Log("exploring %A") genome
-  let assemblies = Helpers.getLatestAssembliesFor(genome)
-  if List.length assemblies = 1 then
-    createTypeForAssembly(assemblies.[0].files)
-  else
-    assemblies |> List.map(fun a ->
-      let t = ProvidedTypeDefinition(a.name, Some typeof<obj>) 
-      t.AddMembers(createTypeForAssembly(a.files))
-      t
+      logger.Log("Locus Name: %A") gb.Locus.Name
+
+      provideSimpleValue("LocusName", gb.Locus.Name)
     )
+    |> Seq.toList
+
+let provideGenbankData (file: Helpers.FTPFileItem) =
+  logger.Log("Printing Genbank File: %A") file
+  parseGenbankFile(file.location)
+
+let createTypeForAssembly (files: IDictionary<Helpers.AssemblyFile, FTPFileItem>) =
+  files.Item(Helpers.GenbankData) |> provideGenbankData;
+
+let createGenomeExplorer (genome: FTPFileItem) =
+  logger.Log("exploring %A") genome
+  Helpers.getLatestAssembliesFor(genome) |> List.map(fun a ->
+    let t = ProvidedTypeDefinition(a.name, Some typeof<obj>) 
+    t.AddMembersDelayed(fun _ -> createTypeForAssembly(a.files))
+    t
+  )
 
 let createGenomesTypes (variant: FTPFileItem) =
   logger.Log("Creating genome types for %A") variant
@@ -63,7 +86,7 @@ let createGenomesTypes (variant: FTPFileItem) =
     logger.Log("Loaded for genome %A") genome
     let genomeType = ProvidedTypeDefinition(genome.name, Some typeof<obj>)
     genomeType.AddMember(ftpUrlType(genome.location))
-    genomeType.AddMembersDelayed(createDelayExploreGenome(genome));
+    genomeType.AddMembersDelayed(fun _ -> createGenomeExplorer(genome));
 
     genomeType
   )

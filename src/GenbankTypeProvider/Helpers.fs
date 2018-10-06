@@ -54,14 +54,6 @@ let filenamesFromDirectories (parent: FTPFileItem) (items: string [] list) =
 let downloadFileFromFTP (url: string) =
   Cache.cache.LoadFile(url)
 
-let parseGenbankFile (url: string) =
-  let req = WebRequest.Create(url)
-  req.Method <- WebRequestMethods.Ftp.DownloadFile
-  // TODO: Change these back to `use`, not `let`, after the relevant metadata is extracted
-  let res = req.GetResponse() :?> FtpWebResponse
-  let stream = new GZipStream(res.GetResponseStream(), CompressionMode.Decompress)
-  Bio.IO.GenBank.GenBankParser().Parse(stream)
-
 let loadDirectoryFromFTP (item: FTPFileItem) =
   let res = Cache.cache.LoadDirectory(item.location)
   res.Split([| '\r'; '\n' |], StringSplitOptions.RemoveEmptyEntries)
@@ -76,7 +68,7 @@ let getAssemblyDetails (item: FTPFileItem) =
     files =
       dict [
         AnnotationHashes, item.childFile("annotation_hashes.txt");
-        GenbankData, item.childFile(item.name + "_genomic_gbff.gz");
+        GenbankData, item.childFile(item.name + "_genomic.gbff.gz");
       ]
   }
 
@@ -105,4 +97,3 @@ let loadGenomesForVariant (variant: FTPFileItem) =
 
 let loadGenomeVariants () =
   getChildDirectories(BaseFile)
-  // [{ name = "other"; location = "ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/other"; variant = Directory }]
