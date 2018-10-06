@@ -53,5 +53,6 @@ type FileWriter(directory: string, combinedLog: bool) =
     member this.Write a b c = writer(a)(b)(c)
   new(directory: string) = FileWriter(directory, true)
 
-let fw = FileWriter("/Users/david/Logs/GenbankTypeProvider")
+let logFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Logs", "GenbankTypeProvider")
+let fw = FileWriter(logFolder)
 let logger = create("GenbankTypeProvider", [fw])
