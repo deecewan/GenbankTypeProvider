@@ -13,9 +13,7 @@ open Fake.DotNet
 open Fake.IO
 open Fake.IO.FileSystemOperators
 open Fake.IO.Globbing.Operators
-open Fake.DotNet.Testing
 open Fake.Tools
-open Fake.Api
 
 // --------------------------------------------------------------------------------------
 // START TODO: Provide project-specific details below
@@ -128,10 +126,6 @@ Target.create "Clean" (fun _ ->
     Shell.cleanDirs ["bin"; "temp"]
 )
 
-Target.create "CleanDocs" (fun _ ->
-    Shell.cleanDirs ["docs"]
-)
-
 // --------------------------------------------------------------------------------------
 // Build library & test project
 
@@ -217,45 +211,6 @@ let copyFiles () =
     Shell.copyRecursive (formatting @@ "styles") (output @@ "content") true
     |> Trace.logItems "Copying styles and scripts: "
 
-Target.create "Docs" (fun _ ->
-    File.delete "docsrc/content/release-notes.md"
-    Shell.copyFile "docsrc/content/" "RELEASE_NOTES.md"
-    Shell.rename "docsrc/content/release-notes.md" "docsrc/content/RELEASE_NOTES.md"
-
-    File.delete "docsrc/content/license.md"
-    Shell.copyFile "docsrc/content/" "LICENSE.txt"
-    Shell.rename "docsrc/content/license.md" "docsrc/content/LICENSE.txt"
-
-
-    DirectoryInfo.getSubDirectories (DirectoryInfo.ofPath templates)
-    |> Seq.iter (fun d ->
-                    let name = d.Name
-                    if name.Length = 2 || name.Length = 3 then
-                        layoutRootsAll.Add(
-                                name, [templates @@ name
-                                       formatting @@ "templates"
-                                       formatting @@ "templates/reference" ]))
-    copyFiles ()
-
-    for dir in  [ content; ] do
-        let langSpecificPath(lang, path:string) =
-            path.Split([|'/'; '\\'|], System.StringSplitOptions.RemoveEmptyEntries)
-            |> Array.exists(fun i -> i = lang)
-        let layoutRoots =
-            let key = layoutRootsAll.Keys |> Seq.tryFind (fun i -> langSpecificPath(i, dir))
-            match key with
-            | Some lang -> layoutRootsAll.[lang]
-            | None -> layoutRootsAll.["en"] // "en" is the default language
-
-        FSFormatting.createDocs (fun args ->
-            { args with
-                Source = content
-                OutputDirectory = output
-                LayoutRoots = layoutRoots
-                ProjectParameters  = ("root", root)::info
-                Template = docTemplate } )
-)
-
 // --------------------------------------------------------------------------------------
 // Release Scripts
 
@@ -304,7 +259,6 @@ Target.create "Release" (fun _ ->
 )
 
 Target.create "BuildPackage" ignore
-Target.create "GenerateDocs" ignore
 
 // --------------------------------------------------------------------------------------
 // Run all targets by default. Invoke 'build <Target>' to override
@@ -316,14 +270,8 @@ Target.create "All" ignore
   ==> "Restore"
   ==> "Build"
   ==> "CopyBinaries"
-  ==> "GenerateDocs"
   ==> "NuGet"
   ==> "All"
-
-
-"CleanDocs"
-  ==>"Docs"
-  ==> "GenerateDocs"
 
 "Clean"
   ==> "Release"
