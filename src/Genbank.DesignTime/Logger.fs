@@ -1,4 +1,4 @@
-﻿module GenbankTypeProvider.Logger
+module GenbankTypeProvider.Logger
 
 open System.IO
 open System

@@ -1,4 +1,4 @@
-﻿module GenbankTypeProvider.Cache
+module GenbankTypeProvider.Cache
 
 open System.Net
 open System.IO

@@ -1,14 +1,11 @@
-﻿module GenbankTypeProvider.TypeGenerators
+module GenbankTypeProvider.TypeGenerators
 
 open ProviderImplementation.ProvidedTypes
 open GenbankTypeProvider
 open Microsoft.FSharp.Quotations
-open System
 open GenbankTypeProvider.Helpers
 open System.Reflection
 open System.Globalization
-open System.Collections.Generic
-open System.Text
 open System.IO
 open Bio.IO.GenBank
 

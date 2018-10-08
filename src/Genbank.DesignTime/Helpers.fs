@@ -1,4 +1,4 @@
-﻿module GenbankTypeProvider.Helpers
+module GenbankTypeProvider.Helpers
 
 open System
 open System.Net

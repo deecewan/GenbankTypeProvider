@@ -1,6 +1,0 @@
-NetBio.Core
-System.ValueTuple
-FSharp.Core
-File:ProvidedTypes.fsi ProvidedTypes
-File:ProvidedTypes.fs ProvidedTypes
-File:ProvidedTypesTesting.fs ProvidedTypes
