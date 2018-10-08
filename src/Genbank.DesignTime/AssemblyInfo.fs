@@ -2,16 +2,16 @@
 namespace System
 open System.Reflection
 
-[<assembly: AssemblyTitleAttribute("Genbank.DesignTime")>]
-[<assembly: AssemblyProductAttribute("Genbank")>]
-[<assembly: AssemblyDescriptionAttribute("This library is for the .NET platform implementing Genbank.")>]
+[<assembly: AssemblyTitleAttribute("GenbankTypeProvider")>]
+[<assembly: AssemblyProductAttribute("GenbankTypeProvider")>]
+[<assembly: AssemblyDescriptionAttribute("A type provider for genetic sequences from Genbank.")>]
 [<assembly: AssemblyVersionAttribute("1.0.0")>]
 [<assembly: AssemblyFileVersionAttribute("1.0.0")>]
 do ()
 
 module internal AssemblyVersionInformation =
-    let [<Literal>] AssemblyTitle = "Genbank.DesignTime"
-    let [<Literal>] AssemblyProduct = "Genbank"
-    let [<Literal>] AssemblyDescription = "This library is for the .NET platform implementing Genbank."
+    let [<Literal>] AssemblyTitle = "GenbankTypeProvider"
+    let [<Literal>] AssemblyProduct = "GenbankTypeProvider"
+    let [<Literal>] AssemblyDescription = "A type provider for genetic sequences from Genbank."
     let [<Literal>] AssemblyVersion = "1.0.0"
     let [<Literal>] AssemblyFileVersion = "1.0.0"
