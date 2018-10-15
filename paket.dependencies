@@ -1,42 +1,22 @@
-framework: netstandard2.0
-
 source https://nuget.org/api/v2
 
-github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fsi
-github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypes.fs
-github fsprojects/FSharp.TypeProviders.StarterPack src/ProvidedTypesTesting.fs
+frameworks: netstandard2.0
 
+# Add the nuget packages you use here
+nuget FSharp.Core 4.5.2
 nuget NetBio.Core 3.0.0-alpha alpha
-nuget FSharp.Core
-nuget Argu
 
-nuget Expecto
-nuget Expecto.BenchmarkDotNet
-nuget Expecto.FsCheck
-nuget Expecto.VisualStudio.TestAdapter version_in_path: true
+nuget System.Reflection
 
-clitool dotnet-fake
+# THis lines are used by Paket to get the latest version of the Type Provider SDK files
+github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fsi
+github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fs
 
-group Formatting
-source https://nuget.org/api/v2
-source https://ci.appveyor.com/nuget/fsharp-formatting
+group Test
+  source https://nuget.org/api/v2
+  frameworks: netstandard2.0
 
-nuget FSharp.Formatting prerelease
-nuget FSharp.Formatting.CommandTool prerelease
-
-group FakeBuild
-source https://api.nuget.org/v3/index.json
-
-storage: none
-
-nuget Fake.Core.Target
-nuget Fake.IO.FileSystem
-nuget Fake.DotNet.Cli
-nuget Fake.Tools.Git
-nuget Fake.DotNet.MSBuild
-nuget Fake.Core.ReleaseNotes
-nuget Fake.DotNet.AssemblyInfoFile
-nuget Fake.DotNet.Paket
-nuget Fake.DotNet.Testing.Expecto
-nuget Fake.DotNet.FSFormatting
-nuget Fake.Api.GitHub
+  nuget NUnit 3.6.1
+  nuget NUnit.Console 3.6.1
+  nuget NUnit3TestAdapter 3.7.0 version_in_path: true
+  nuget FSharp.Core 4.5.2

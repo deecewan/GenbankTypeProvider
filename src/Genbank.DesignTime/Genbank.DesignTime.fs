@@ -1,9 +1,8 @@
-﻿namespace GenbankTypeProvider
+namespace GenbankTypeProvider
 
 open ProviderImplementation.ProvidedTypes
 open Microsoft.FSharp.Core.CompilerServices
 open System.Reflection
-open System
 
 [<TypeProvider>]
 type GenbankTypeProvider (config : TypeProviderConfig) as this =

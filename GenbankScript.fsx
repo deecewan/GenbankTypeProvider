@@ -1,5 +1,4 @@
-#r "D:/projects/deecewan/GenbankTypeProvider/GenbankTypeProvider/bin/Debug/Bio.Core.dll"
-#r "D:/projects/deecewan/GenbankTypeProvider/GenbankTypeProvider/bin/Debug/netstandard.dll"
+#r "/Users/david/projects/deecewan/GenbankTypeProvider/packages/NetBio.Core/lib/netstandard2.0/Bio.Core.dll"
 
 open System.Net
 open System.IO.Compression
