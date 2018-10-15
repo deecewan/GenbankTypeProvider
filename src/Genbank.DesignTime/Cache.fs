@@ -65,7 +65,7 @@ type FileSystem() =
       result :> Stream
     member this.LoadDirectory (url) =
       let result = match this.loadCacheFile(url) with
-                   | Some(data) -> 
+                   | Some(data) ->
                      fileLogger.Log("Cache hit for directory %s") url
                      data
                    | None ->

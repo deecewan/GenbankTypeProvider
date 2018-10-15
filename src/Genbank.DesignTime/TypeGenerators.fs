@@ -17,7 +17,9 @@ type PropertyType = {
 let logger = Logger.createChild(Logger.logger) "TypeGenerators"
 
 let ftpUrlType (location: string) =
-  ProvidedProperty("FTPUrl", typeof<string>, isStatic = true, getterCode = (fun _ -> Expr.Value(location)));
+  let t = ProvidedProperty("FTPUrl", typeof<string>, isStatic = true, getterCode = (fun _ -> Expr.Value(location)));
+  t.AddXmlDoc("The URL where this item was retrieved from.")
+  t
 
 let provideSimpleValue (name: string, value: string) =
   ProvidedProperty(name, typeof<string>, isStatic = true, getterCode = fun _ -> Expr.Value(value))
@@ -33,9 +35,19 @@ let createTypeForAssembly (file: Helpers.FTPFileItem) =
   logger.Log("Creating types for assembly: %A") file
   loadGenbankFile(file.location)(fun genbankFile ->
     genbankFile |> Seq.map(fun item ->
-      logger.Log("Parsed Genbank Data: %A") item
       let gb = item.Metadata.Item("GenBank") :?> GenBankMetadata
-      provideSimpleValue("LocusName", gb.Locus.Name)
+      let t = ProvidedTypeDefinition(gb.Locus.Name, Some typeof<obj>)
+      t.AddMembers([
+        provideSimpleValue("LocusName", gb.Locus.Name);
+        provideSimpleValue("AccessionPrimary", gb.Accession.Primary);
+        provideSimpleValue("BaseCount", gb.BaseCount);
+        provideSimpleValue("Origin", gb.Origin);
+        provideSimpleValue("SourceCommonName", gb.Source.CommonName);
+        provideSimpleValue("Version", gb.Version.Version);
+        provideSimpleValue("Contig", gb.Contig);
+        provideSimpleValue("DbSource", gb.DbSource);
+      ])
+      t
     ) |> Seq.toList
   )
 
@@ -43,21 +55,15 @@ let createDocumentationForAssembly (file: Helpers.FTPFileItem) =
   logger.Log("Creating types for assembly: %A") file
   loadGenbankFile(file.location)(fun genbankFile ->
     genbankFile |> Seq.map(fun item ->
-      logger.Log("Parsed Genbank Data: %A") item
       let gb = item.Metadata.Item("GenBank") :?> GenBankMetadata
-      String.concat("\n")([
-        "<summary>";
-         "This is a provided type for " + file.location + "!";
-          "The locus name is " + gb.Locus.Name + ".";
-         "The definition is " + gb.Definition + ".";
-        "</summary>";
-      ])
+      gb.Definition
     ) |> String.concat("\n")
   )
 
 let createGenomeExplorer (genome: FTPFileItem) =
   logger.Log("exploring %A") genome
-  Helpers.getLatestAssembliesFor(genome) |> List.map(fun a ->
+  let latestAssemblies = Helpers.getLatestAssembliesFor(genome)
+  latestAssemblies |> List.map(fun a ->
     let t = ProvidedTypeDefinition(a.name, Some typeof<obj>)
     let genbankFile = a.files.Item(Helpers.GenbankData)
     t.AddXmlDocDelayed(fun _ -> createDocumentationForAssembly(genbankFile))
