@@ -1,5 +1,11 @@
 # Challenges
 
+## Intellisense
+
+The most obvious problem is that of intellisense not working as expected. This
+is more a symptom of other problems with dependencies and experience, however,
+so should be resolved as those problems are resolved.
+
 ## Distribution
 
 Due to the problems with dependency resolution, a major challenge is
@@ -33,23 +39,15 @@ incremental change required closing the IDE, running the compiler (it can't run
 while the DLLs are being used to provide types), opening the IDE, attaching the
 debugger, and finally opening a project that uses the provider.
 
-### Wasted Network Requests
-The provider makes a lot of redundant API calls and does a lot of unused data
-processing if the types used are already explicitly defined. This makes sense
-from the point-of-view of a type provider, because the compiler has to assert
-that the types actually exist in order to verify correctness of the program. 
-It is currently unknown whether a type can be 'verified' rather than
-'generated'. That is to say, given a complete type definition like 
+## Inexperience
 
-```fsharp
-Genbank.Provider.Other.Genomes.``synthetic_Mycoplasma``.``Annotation Hashes``.``Assembly accession``
-```
+Whilst having worked with the language and runtime for the better part of a
+year, there are many aspects that are not fully understood. As mentioned
+numerous times, dependency resolution is essentially a black box. This makes it
+difficult to work on platforms outside of Windows. Windows has had many of these
+problems solved, and Visual Studio manages to abstract the need for a lot of
+this knowledge from the user. This is advantageous until there are any problems,
+at which point relying on the IDE to do everything is no longer viable.
 
-is it possible to verify that just that type is correct using the provider, or if every layer will have to be generated again. Given a type, the URL to lookup to verify if a type is valid can be determined by simply reversing the steps used to generate the type.
-
-### Linking of Genomes
-A feature of Genbank files is that they contain a list of related genes.
-Ideally, these genes should link, through the types, to a list of related
-genomes. Establishing how to re-use types in this manner, and providing a
-`siblings` or similar type on any given genome would greatly improve the usage
-of the tool for the purposes of exploration.
+A better understanding of exactly how the runtime works, and how the platform
+interacts with the assemblies, would likely have been very helpful in the project.

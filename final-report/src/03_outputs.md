@@ -89,9 +89,11 @@ formatted files resulted in the slow-down of Intellisense beyond what could be
 considered reasonable. Taxa such as 'Bacteria' contained so many items that
 processing the directory listing resulted in Visual Studio coming to a halt
 while the types were generated, and and F# Interactive instance becoming
-unresponsive.  Similar problems occurred with certain Genbank files, as their
-size is in the hundreds of megabytes. Not only is there significant slow down,
-but the memory usage of the provider can climb into the gigabytes.
+unresponsive. For context, the resultant output of the 'Archaea' directory was
+182kB. For 'Bacteria', this was 3.3MB. That's a factor of 18 times larger.
+Similar problems occurred with certain Genbank files, as their size is in the
+hundreds of megabytes. Not only is there significant slow down, but the
+memory usage of the provider can climb into the gigabytes.
 
 ## Forest
 
